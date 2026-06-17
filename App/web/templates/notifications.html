@@ -24,21 +24,27 @@
                 <strong>{{ n.subject }}</strong>
             </td>
             <td>{{ n.body }}</td>
-            <td class="text-muted" style="white-space:nowrap;">{{ n.created_at[:16] if n.created_at else '—' }}</td>
+            <td class="text-muted local-time-cell" data-utc="{{ n.created_at }}Z" style="white-space:nowrap;">
+                {% if n.created_at %}
+                {{ n.created_at[:10] }}<br>
+                <span>{{ n.created_at[11:16] }}</span>
+                {% else %}
+                —
+                {% endif %}
+            </td>
             <td>
                 {% if n.status == 'read' %}
-                    <span class="text-muted">Read</span>
+                <span class="text-muted">Read</span>
                 {% elif n.status == 'sent' %}
-                    <span class="status status-pending">Unread</span>
+                <span class="status status-pending">Unread</span>
                 {% else %}
-                    <span class="status">{{ n.status }}</span>
+                <span class="status">{{ n.status }}</span>
                 {% endif %}
             </td>
             <td>
                 {% if n.status != 'read' %}
-                <form method="POST"
-                      action="{{ url_for('mark_notification_read', notification_id=n.id) }}"
-                      class="inline-form">
+                <form method="POST" action="{{ url_for('mark_notification_read', notification_id=n.id) }}"
+                    class="inline-form">
                     <button type="submit" class="btn btn-secondary btn-sm">Mark Read</button>
                 </form>
                 {% else %}
@@ -54,4 +60,22 @@
     <p class="text-muted">No notifications.</p>
 </div>
 {% endif %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.local-time-cell').forEach(function(el) {
+            let utcStr = el.getAttribute('data-utc');
+            if (utcStr && utcStr !== "NoneZ" && utcStr !== "Z" && utcStr !== "—Z") {
+                let d = new Date(utcStr);
+                if (!isNaN(d)) {
+                    let yyyy = d.getFullYear();
+                    let mm = String(d.getMonth() + 1).padStart(2, '0');
+                    let dd = String(d.getDate()).padStart(2, '0');
+                    let timePart = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
+                    el.innerHTML = `${yyyy}-${mm}-${dd}<br><span>${timePart}</span>`;
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

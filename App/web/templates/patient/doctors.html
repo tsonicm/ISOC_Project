@@ -23,7 +23,7 @@
             <td><strong>{{ doctor.full_name }}</strong></td>
             <td>{{ doctor.specialization or '—' }}</td>
             <td>{{ doctor.email }}</td>
-            <td>{{ doctor.phone or '—' }}</td>
+            <td>{{ doctor.phone[:4] ~ '-' ~ doctor.phone[4:7] ~ '-' ~ doctor.phone[7:] if doctor.phone and doctor.phone|length == 10 else (doctor.phone or '—') }}</td>
             <td>
                 <a href="{{ url_for('patient_doctor_availability', doctor_id=doctor.id) }}"
                    class="btn btn-primary btn-sm">View Availability</a>

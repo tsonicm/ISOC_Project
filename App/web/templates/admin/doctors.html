@@ -28,7 +28,7 @@
             <td><strong>{{ doctor.full_name }}</strong></td>
             <td>{{ doctor.specialization or '—' }}</td>
             <td>{{ doctor.email }}</td>
-            <td>{{ doctor.phone or '—' }}</td>
+            <td>{{ doctor.phone[:4] ~ '-' ~ doctor.phone[4:7] ~ '-' ~ doctor.phone[7:] if doctor.phone and doctor.phone|length == 10 else (doctor.phone or '—') }}</td>
             <td>
                 {% if doctor.active %}
                     <span class="status status-confirmed">Active</span>

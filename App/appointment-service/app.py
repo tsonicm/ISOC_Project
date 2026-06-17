@@ -51,6 +51,14 @@ def now_iso():
     return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
 
 
+def format_dt_str(dt_str):
+    try:
+        dt = datetime.strptime(dt_str[:19], "%Y-%m-%dT%H:%M:%S")
+        return dt.strftime("%Y-%m-%d at %H:%M")
+    except Exception:
+        return dt_str
+
+
 def send_notification(recipient_type, recipient_id, subject, body, appointment_id=None):
     """
     Fire-and-forget notification to Notification Service.
@@ -224,16 +232,17 @@ def create_appointment():
     db.close()
 
     # Send notifications (best-effort)
+    fmt_start = format_dt_str(start_datetime)
     send_notification(
         "patient", patient_id,
         "Appointment Created",
-        f"Your appointment on {start_datetime} has been created and is pending confirmation.",
+        f"Your appointment on {fmt_start} has been created and is pending confirmation.",
         appointment_id,
     )
     send_notification(
         "doctor", doctor_id,
         "New Appointment Pending",
-        f"A new appointment on {start_datetime} is pending your confirmation.",
+        f"A new appointment on {fmt_start} is pending your confirmation.",
         appointment_id,
     )
 
@@ -310,25 +319,26 @@ def update_appointment(appointment_id):
     patient_id = appointment["patient_id"]
     doctor_id = appointment["doctor_id"]
     start = appointment["start_datetime"]
+    fmt_start = format_dt_str(start)
 
     if new_status == "confirmed":
         send_notification(
             "patient", patient_id,
             "Appointment Confirmed",
-            f"Your appointment on {start} has been confirmed.",
+            f"Your appointment on {fmt_start} has been confirmed.",
             appointment_id,
         )
     elif new_status == "cancelled":
         send_notification(
             "patient", patient_id,
             "Appointment Cancelled",
-            f"Your appointment on {start} has been cancelled.",
+            f"Your appointment on {fmt_start} has been cancelled.",
             appointment_id,
         )
         send_notification(
             "doctor", doctor_id,
             "Appointment Cancelled",
-            f"The appointment on {start} has been cancelled.",
+            f"The appointment on {fmt_start} has been cancelled.",
             appointment_id,
         )
 
