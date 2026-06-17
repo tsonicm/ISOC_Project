@@ -60,6 +60,46 @@ services:
     networks:
       - appointment_net
 
+  web-db-viewer:
+    image: coleifer/sqlite-web:latest
+    ports:
+      - "5100:8080"
+    volumes:
+      - web_data:/data
+    networks:
+      - appointment_net
+    command: sqlite_web -H 0.0.0.0 /data/web.db
+
+  appointment-db-viewer:
+    image: coleifer/sqlite-web:latest
+    ports:
+      - "5101:8080"
+    volumes:
+      - appointments_data:/data
+    networks:
+      - appointment_net
+    command: sqlite_web -H 0.0.0.0 /data/appointments.db
+
+  directory-db-viewer:
+    image: coleifer/sqlite-web:latest
+    ports:
+      - "5102:8080"
+    volumes:
+      - directory_data:/data
+    networks:
+      - appointment_net
+    command: sqlite_web -H 0.0.0.0 /data/directory.db
+
+  notification-db-viewer:
+    image: coleifer/sqlite-web:latest
+    ports:
+      - "5103:8080"
+    volumes:
+      - notifications_data:/data
+    networks:
+      - appointment_net
+    command: sqlite_web -H 0.0.0.0 /data/notifications.db
+
 networks:
   appointment_net:
     driver: bridge
