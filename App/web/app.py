@@ -15,7 +15,7 @@ from flask import (
     flash, session, jsonify,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-from init_db import init_db, seed_data, get_db
+from init_db import init_db, seed_data, get_db, DB_PATH
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-prod")

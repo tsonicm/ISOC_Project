@@ -8,7 +8,7 @@ Database: directory.db
 import os
 from datetime import datetime
 from flask import Flask, request, jsonify
-from init_db import init_db, get_db
+from init_db import init_db, get_db, DB_PATH
 
 app = Flask(__name__)
 
