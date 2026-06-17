@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Working Hours — {{ doctor.full_name or 'Doctor' }} — Admin{% endblock %}
+
+{% block content %}
+<h1>Working Hours: {{ doctor.full_name or 'Doctor' }}</h1>
+<p class="text-muted mb-2">
+    {{ doctor.specialization or '' }}
+    {% if doctor.email %} · {{ doctor.email }}{% endif %}
+</p>
+
+<!-- Existing working hours -->
+<h2>Current Schedule</h2>
+
+{% if working_hours %}
+<table>
+    <thead>
+        <tr>
+            <th>Day</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Slot (min)</th>
+            <th>Break</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for wh in working_hours %}
+        <tr>
+            <td><strong>{{ weekday_names[wh.weekday] if wh.weekday < weekday_names|length else wh.weekday }}</strong></td>
+            <td>{{ wh.start_time }}</td>
+            <td>{{ wh.end_time }}</td>
+            <td>{{ wh.slot_length_minutes }} min</td>
+            <td>
+                {% if wh.break_start_time and wh.break_end_time %}
+                    {{ wh.break_start_time }} – {{ wh.break_end_time }}
+                {% else %}
+                    <span class="text-muted">None</span>
+                {% endif %}
+            </td>
+            <td>
+                <form method="POST"
+                      action="{{ url_for('admin_delete_hours', doctor_id=doctor.id) }}"
+                      class="inline-form"
+                      onsubmit="return confirm('Delete working hours for {{ weekday_names[wh.weekday] }}?')">
+                    <input type="hidden" name="weekday" value="{{ wh.weekday }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card mb-2">
+    <p class="text-muted">No working hours configured yet.</p>
+</div>
+{% endif %}
+
+<!-- Add new working hours -->
+<h2 class="mt-2">Add Working Hours</h2>
+<div class="card" style="max-width: 700px;">
+    <form method="POST" action="{{ url_for('admin_create_hours', doctor_id=doctor.id) }}">
+        <div class="d-flex gap-1" style="flex-wrap: wrap;">
+            <div class="form-group">
+                <label for="weekday">Day</label>
+                <select id="weekday" name="weekday" required>
+                    {% for i in range(7) %}
+                        <option value="{{ i }}">{{ weekday_names[i] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="start_time">Start Time</label>
+                <input type="time" id="start_time" name="start_time" value="09:00" required>
+            </div>
+            <div class="form-group">
+                <label for="end_time">End Time</label>
+                <input type="time" id="end_time" name="end_time" value="17:00" required>
+            </div>
+            <div class="form-group">
+                <label for="slot_length_minutes">Slot (min)</label>
+                <input type="number" id="slot_length_minutes" name="slot_length_minutes"
+                       value="30" min="5" max="240" required style="width:80px;">
+            </div>
+        </div>
+        <div class="d-flex gap-1" style="flex-wrap: wrap;">
+            <div class="form-group">
+                <label for="break_start_time">Break Start (optional)</label>
+                <input type="time" id="break_start_time" name="break_start_time">
+            </div>
+            <div class="form-group">
+                <label for="break_end_time">Break End (optional)</label>
+                <input type="time" id="break_end_time" name="break_end_time">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Working Hours</button>
+    </form>
+</div>
+
+<div class="mt-2">
+    <a href="{{ url_for('admin_doctors') }}" class="btn btn-secondary">← Back to Doctors</a>
+</div>
+{% endblock %}

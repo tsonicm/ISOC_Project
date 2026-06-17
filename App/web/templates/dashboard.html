@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Patient Appointment Manager{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ current_user.email }}</h1>
+<p>You are logged in as <strong>{{ current_user.role }}</strong>.</p>
+
+<div class="mt-2">
+    {% if current_user.role == 'patient' %}
+        <a href="{{ url_for('patient_doctors') }}" class="btn btn-primary">Browse Doctors</a>
+        <a href="{{ url_for('patient_appointments') }}" class="btn btn-secondary">My Appointments</a>
+    {% elif current_user.role == 'doctor' %}
+        <a href="{{ url_for('doctor_appointments') }}" class="btn btn-primary">My Appointments</a>
+    {% elif current_user.role == 'admin' %}
+        <a href="{{ url_for('admin_doctors') }}" class="btn btn-primary">Manage Doctors</a>
+        <a href="{{ url_for('admin_patients') }}" class="btn btn-secondary">Manage Patients</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications — Patient Appointment Manager{% endblock %}
+
+{% block content %}
+<h1>Notifications</h1>
+<p class="text-muted mb-2">Your appointment notifications.</p>
+
+{% if notifications %}
+<table>
+    <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for n in notifications %}
+        <tr style="{% if n.status != 'read' %}background: #eef6ff;{% endif %}">
+            <td>
+                <strong>{{ n.subject }}</strong>
+            </td>
+            <td>{{ n.body }}</td>
+            <td class="text-muted" style="white-space:nowrap;">{{ n.created_at[:16] if n.created_at else '—' }}</td>
+            <td>
+                {% if n.status == 'read' %}
+                    <span class="text-muted">Read</span>
+                {% elif n.status == 'sent' %}
+                    <span class="status status-pending">Unread</span>
+                {% else %}
+                    <span class="status">{{ n.status }}</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if n.status != 'read' %}
+                <form method="POST"
+                      action="{{ url_for('mark_notification_read', notification_id=n.id) }}"
+                      class="inline-form">
+                    <button type="submit" class="btn btn-secondary btn-sm">Mark Read</button>
+                </form>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card">
+    <p class="text-muted">No notifications.</p>
+</div>
+{% endif %}
+{% endblock %}

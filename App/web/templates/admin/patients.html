@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Patients — Admin — Patient Appointment Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-2">
+    <h1>Manage Patients</h1>
+    <a href="{{ url_for('admin_patient_form_new') }}" class="btn btn-primary">+ New Patient</a>
+</div>
+
+{% if patients %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Registered</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.id }}</td>
+            <td><strong>{{ patient.full_name }}</strong></td>
+            <td>{{ patient.email }}</td>
+            <td>{{ patient.phone or '—' }}</td>
+            <td class="text-muted">{{ patient.created_at[:10] if patient.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card">
+    <p class="text-muted">No patients registered yet.</p>
+</div>
+{% endif %}
+{% endblock %}

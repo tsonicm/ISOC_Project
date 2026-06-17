@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=development
+      - PORT=8080
+      - SECRET_KEY=dev-secret-key-change-in-prod
+      - DB_PATH=/data/web.db
+      - DIRECTORY_SERVICE_BASE_URL=http://directory-service:5002
+      - APPOINTMENT_SERVICE_BASE_URL=http://appointment-service:5001
+      - NOTIFICATION_SERVICE_BASE_URL=http://notification-service:5003
+    volumes:
+      - web_data:/data
+    networks:
+      - appointment_net
+    depends_on:
+      - directory-service
+      - appointment-service
+      - notification-service
+
+  appointment-service:
+    build: ./appointment-service
+    environment:
+      - APP_ENV=development
+      - PORT=5001
+      - DB_PATH=/data/appointments.db
+      - DIRECTORY_SERVICE_BASE_URL=http://directory-service:5002
+      - NOTIFICATION_SERVICE_BASE_URL=http://notification-service:5003
+    volumes:
+      - appointments_data:/data
+    networks:
+      - appointment_net
+    depends_on:
+      - directory-service
+      - notification-service
+
+  directory-service:
+    build: ./directory-service
+    environment:
+      - APP_ENV=development
+      - PORT=5002
+      - DB_PATH=/data/directory.db
+    volumes:
+      - directory_data:/data
+    networks:
+      - appointment_net
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      - APP_ENV=development
+      - PORT=5003
+      - DB_PATH=/data/notifications.db
+    volumes:
+      - notifications_data:/data
+    networks:
+      - appointment_net
+
+networks:
+  appointment_net:
+    driver: bridge
+
+volumes:
+  web_data:
+  appointments_data:
+  directory_data:
+  notifications_data:

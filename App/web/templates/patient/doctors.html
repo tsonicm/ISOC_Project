@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Doctors — Patient Appointment Manager{% endblock %}
+
+{% block content %}
+<h1>Available Doctors</h1>
+<p class="text-muted mb-2">Browse doctors and check their availability to book an appointment.</p>
+
+{% if doctors %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doctor in doctors %}
+        <tr>
+            <td><strong>{{ doctor.full_name }}</strong></td>
+            <td>{{ doctor.specialization or '—' }}</td>
+            <td>{{ doctor.email }}</td>
+            <td>{{ doctor.phone or '—' }}</td>
+            <td>
+                <a href="{{ url_for('patient_doctor_availability', doctor_id=doctor.id) }}"
+                   class="btn btn-primary btn-sm">View Availability</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card">
+    <p class="text-muted">No doctors available at the moment.</p>
+</div>
+{% endif %}
+{% endblock %}

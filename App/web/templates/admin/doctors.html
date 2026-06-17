@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Doctors — Admin — Patient Appointment Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-2">
+    <h1>Manage Doctors</h1>
+    <a href="{{ url_for('admin_doctor_form_new') }}" class="btn btn-primary">+ New Doctor</a>
+</div>
+
+{% if doctors %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doctor in doctors %}
+        <tr>
+            <td>{{ doctor.id }}</td>
+            <td><strong>{{ doctor.full_name }}</strong></td>
+            <td>{{ doctor.specialization or '—' }}</td>
+            <td>{{ doctor.email }}</td>
+            <td>{{ doctor.phone or '—' }}</td>
+            <td>
+                {% if doctor.active %}
+                    <span class="status status-confirmed">Active</span>
+                {% else %}
+                    <span class="status status-cancelled">Inactive</span>
+                {% endif %}
+            </td>
+            <td>
+                <div class="d-flex gap-1">
+                    <a href="{{ url_for('admin_doctor_form_edit', doctor_id=doctor.id) }}"
+                       class="btn btn-secondary btn-sm">Edit</a>
+                    <a href="{{ url_for('admin_doctor_hours', doctor_id=doctor.id) }}"
+                       class="btn btn-primary btn-sm">Hours</a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card">
+    <p class="text-muted">No doctors registered yet.</p>
+</div>
+{% endif %}
+{% endblock %}

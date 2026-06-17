@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}My Appointments — Patient Appointment Manager{% endblock %}
+
+{% block content %}
+<h1>My Appointments</h1>
+<p class="text-muted mb-2">View and manage your appointments.</p>
+
+{% if appointments %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Doctor</th>
+            <th>Date & Time</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for appt in appointments %}
+        <tr>
+            <td>{{ appt.appointment_id }}</td>
+            <td>{{ appt.doctor_name or 'Doctor #' ~ appt.doctor_id }}</td>
+            <td>
+                {{ appt.start_datetime[:10] }}<br>
+                <span class="text-muted">{{ appt.start_datetime[11:16] }} – {{ appt.end_datetime[11:16] }}</span>
+            </td>
+            <td>{{ appt.reason or '—' }}</td>
+            <td>
+                <span class="status status-{{ appt.status }}">{{ appt.status }}</span>
+            </td>
+            <td>
+                {% if appt.status in ['pending', 'confirmed'] %}
+                <form method="POST"
+                      action="{{ url_for('patient_cancel_appointment', appointment_id=appt.appointment_id) }}"
+                      class="inline-form"
+                      onsubmit="return confirm('Are you sure you want to cancel this appointment?')">
+                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                </form>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card">
+    <p class="text-muted">You have no appointments yet.</p>
+    <a href="{{ url_for('patient_doctors') }}" class="btn btn-primary mt-1">Browse Doctors</a>
+</div>
+{% endif %}
+{% endblock %}
