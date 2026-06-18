@@ -15,7 +15,7 @@ Patient Appointment Manager este un sistem web de dimensiune mică spre medie ca
 - Oferirea de instrumente pentru medici și administratori pentru a:
     - Configura și actualiza programul de lucru și intervalele de pauză.
     - Vizualiza programările viitoare și detaliile acestora.
-- Menținerea unei arhitecturi curate și minimale, potrivite pentru un proiect studențesc sau de portofoliu:
+- Menținerea unei arhitecturi curate și minimale, potrivite pentru un proiect mic sau de portofoliu:
     - Puține microservicii cu contexte delimitate clar.
     - Dependențe Python minime și utilizare simplă a bazei de date.
     - Distribuire bazată pe Docker fără orchestrare complexă.
@@ -55,7 +55,7 @@ Patient Appointment Manager este un sistem web de dimensiune mică spre medie ca
 
 - **Simplitate și minimalism**: Utilizarea unui stack tehnologic minimal — Python cu un framework web ușor (Flask), SQLite pentru persistență și REST peste HTTP.
 - **Distribuire**: Toate componentele rulează în containere Docker, orchestrate prin Docker Compose; fără Kubernetes sau service mesh extern.
-- **Performanță**: Adecvată pentru trafic redus spre mediu, tipic unui proiect studențesc; fără constrângeri hard real-time. Flask și SQLite sunt suficiente pentru astfel de API-uri la scară mică.
+- **Performanță**: Adecvată pentru trafic redus spre mediu, tipic unui proiect mic sau de portofoliu; fără constrângeri hard real-time. Flask și SQLite sunt suficiente pentru astfel de API-uri la scară mică.
 - **Fiabilitate**: Tratare de bază a erorilor și validare pentru a preveni programările inconsistente (de ex., rezervarea dublă a unui interval).
 - **Securitate**: Autentificare simplă (de ex., nume de utilizator/parolă cu sesiune sau JWT) pentru separarea accesului pacientului de cel al medicului/administratorului; se presupune că terminarea HTTPS este gestionată extern într-un mediu similar producției.
 - **Mentenabilitate**: Limite clare între servicii, cod Python lizibil și structură de repository simplă.
@@ -151,7 +151,7 @@ Patient Appointment Manager este un sistem web de dimensiune mică spre medie ca
 ![Bounded Context Diagram](img/componente_diagram.jpg)
 
 
-Pentru a păstra sistemul ușor de înțeles la un nivel potrivit pentru un proiect studențesc/de portofoliu, definim trei bounded contexts și mapăm fiecare la un microserviciu.
+Pentru a păstra sistemul ușor de înțeles la un nivel potrivit pentru un proiect mic/de portofoliu, definim trei bounded contexts și mapăm fiecare la un microserviciu.
 
 1. **Contextul Directory**
     - Domeniu: Gestionarea `Patient`, `Doctor` și `DoctorWorkingHours`.
