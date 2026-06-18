@@ -1,284 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src * 'self' data: https: file:; script-src * 'unsafe-inline'; style-src * 'unsafe-inline' https: file:; font-src * https: file:;">
-    <title>Markdown: Rich Preview</title>
-    
-    <link id="highlight-css-light" rel="stylesheet" href="file:///home/ikaros/.vscode-oss/extensions/nur-srijan.markdown-rich-preview-1.2.2-universal/assets/vendor/highlight/styles/github.min.css" disabled>
-    <link id="highlight-css-dark" rel="stylesheet" href="file:///home/ikaros/.vscode-oss/extensions/nur-srijan.markdown-rich-preview-1.2.2-universal/assets/vendor/highlight/styles/github-dark.min.css">
-    
-    <link rel="stylesheet" href="file:///home/ikaros/.vscode-oss/extensions/nur-srijan.markdown-rich-preview-1.2.2-universal/assets/vendor/katex/katex.min.css" onerror="console.error('Failed to load KaTeX CSS:', this.href)">
-    <script>
-        // Highlighting is done on the extension side during markdown parsing.
-        // No browser-side initialization of highlight.js is needed.
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Patient Appointment Manager</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-        // Copy to clipboard function
-        function copyToClipboard(button) {
-            const codeBlock = button.closest('.code-block');
-            const code = codeBlock.querySelector('code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                button.style.backgroundColor = '#4CAF50';
-                button.style.color = 'white';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.backgroundColor = '';
-                    button.style.color = '';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        }
-    </script>
-    <style>
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
-            font-size: 14px;
-            line-height: 1.6;
-            padding: 0 20px;
-        }
-        img.emoji {
-            height: 1em;
-            width: 1em;
-            margin: 0 .05em 0 .1em;
-            vertical-align: -0.1em;
-            display: inline;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 600;
-            margin-top: 24px;
-            margin-bottom: 16px;
-            line-height: 1.25;
-        }
-        h1 { 
-            font-size: 2em; 
-            border-bottom: 1px solid var(--vscode-editorGroup-border, #eaecef); 
-            padding-bottom: 0.3em;
-            margin-top: 0.67em 0;
-        }
-        h2 { 
-            font-size: 1.5em; 
-            border-bottom: 1px solid var(--vscode-editorGroup-border, #eaecef); 
-            padding-bottom: 0.3em;
-            margin-top: 1.5em;
-        }
-        hr {
-            border: 0;
-            border-bottom: 1px solid var(--vscode-editorGroup-border, #eaecef);
-            margin: 1.5em 0;
-        }
-        h3 { 
-            font-size: 1.25em; 
-            margin-top: 1.25em;
-        }
-        h4 { 
-            font-size: 1em; 
-            margin-top: 1em;
-        }
-        a { 
-            color: #0366d6; 
-            text-decoration: none; 
-        }
-        a:hover { 
-            text-decoration: underline; 
-        }
-        strong { 
-            font-weight: 600; 
-        }
-        pre {
-            background-color: var(--vscode-textCodeBlock-background, #f6f8fa);
-            overflow: auto;
-            margin: 0;
-        }
-        code {
-            font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
-            padding: 0.2em 0.4em;
-            font-size: 90%;
-        }
-        pre code {
-            background-color: transparent;
-            padding: 0;
-        }
-        .code-block {
-            position: relative;
-            background-color: var(--vscode-textCodeBlock-background, #f6f8fa);
-            border-radius: 6px;
-            margin: 1em 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 10px;
-            background-color: var(--vscode-editorGroupHeader-tabsBackground, #eaecef);
-            border-top-left-radius: 6px;
-            border-top-right-radius: 6px;
-        }
-        .language {
-            color: var(--vscode-editor-foreground, #24292e);
-            font-size: 0.9em;
-            font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
-        }
-        .copy-button {
-            padding: 4px 8px;
-            font-size: 0.9em;
-            color: var(--vscode-editor-foreground, #24292e);
-            background-color: transparent;
-            border: 1px solid var(--vscode-editorGroup-border, #ddd);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .copy-button:hover {
-            background-color: var(--vscode-button-secondaryHoverBackground, #e9e9e9);
-            border-color: var(--vscode-button-border, #ccc);
-        }
-        blockquote {
-            margin: 0;
-            padding: 0 1em;
-            color: #6a737d;
-            border-left: 0.25em solid #dfe2e5;
-        }
-        ul, ol {
-            padding-left: 2em;
-        }
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-            width: 100%;
-            overflow: auto;
-            margin-bottom: 16px;
-        }
-        table th {
-            font-weight: 600;
-        }
-        table th, table td {
-            padding: 6px 13px;
-            border: 1px solid var(--vscode-editorGroup-border, #dfe2e5);
-        }
-        table tr {
-            background-color: var(--vscode-editor-background, #fff);
-            border-top: 1px solid var(--vscode-editorGroup-border, #c6cbd1);
-        }
-        table tr:nth-child(2n) {
-            background-color: var(--vscode-list-hoverBackground, #f6f8fa);
-        }
-        img {
-            max-width: 100%;
-            box-sizing: content-box;
-        }
-        /* GitHub-style Alerts */
-        .markdown-alert {
-            padding: 0.25rem 1rem;
-            margin-bottom: 1rem;
-            color: inherit;
-            border-left: 0.25em solid #dfe2e5;
-            border-radius: 6px;
-        }
-        .markdown-alert-title {
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            line-height: 1;
-        }
-        .markdown-alert-title svg {
-            margin-right: 8px;
-        }
-        .markdown-alert-note { border-left-color: #0969da; }
-        .markdown-alert-note .markdown-alert-title { color: #0969da; }
-        .markdown-alert-tip { border-left-color: #1a7f37; }
-        .markdown-alert-tip .markdown-alert-title { color: #1a7f37; }
-        .markdown-alert-important { border-left-color: #8250df; }
-        .markdown-alert-important .markdown-alert-title { color: #8250df; }
-        .markdown-alert-warning { border-left-color: #9a6700; }
-        .markdown-alert-warning .markdown-alert-title { color: #9a6700; }
-        .markdown-alert-caution { border-left-color: #d1242f; }
-        .markdown-alert-caution .markdown-alert-title { color: #d1242f; }
-
-        /* Footnotes */
-        .footnotes {
-            font-size: 12px;
-            color: #6a737d;
-            border-top: 1px solid #dfe2e5;
-            margin-top: 24px;
-        }
-        .footnotes ol {
-            padding-left: 16px;
-        }
-        .footnote-backref {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            margin-left: 4px;
-        }
-
-        /* Task Lists */
-        ul.contains-task-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .task-list-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 4px;
-        }
-        .task-list-item input[type="checkbox"] {
-            margin: 0.25em 0.5em 0 0;
-            vertical-align: middle;
-        }
-
-        /* Front Matter */
-        .front-matter {
-            margin-bottom: 24px;
-            border: 1px solid var(--vscode-editorGroup-border, #dfe2e5);
-            border-radius: 6px;
-            padding: 12px;
-            background-color: var(--vscode-list-hoverBackground, #f6f8fa);
-        }
-        .front-matter table {
-            margin-bottom: 0;
-            border: none;
-        }
-        .front-matter table tr {
-            background-color: transparent;
-            border: none;
-        }
-        .front-matter table td {
-            border: none;
-            padding: 4px 8px;
-        }
-        .front-matter-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: var(--vscode-descriptionForeground, #6a737d);
-            text-transform: uppercase;
-        }
-    </style>
-</head>
-<body>
-    <h1 id="patient-appointment-manager">Patient Appointment Manager</h1>
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="patient-appointment-manager">Patient Appointment Manager</h1>
 <h2 id="1-prezentare-generală-a-proiectului">1. Prezentare generală a proiectului</h2>
 <h3 id="11-descrierea-sistemului">1.1 Descrierea sistemului</h3>
 <p>Patient Appointment Manager este un sistem web de dimensiune mică spre medie care permite pacienților să vizualizeze disponibilitatea medicilor și să programeze, să confirme și să anuleze programări, în timp ce medicii și administratorii gestionează programul de lucru și datele de bază ale profilului. Sistemul este implementat ca un set de servicii ușoare bazate pe Python, distribuite ca containere Docker și care comunică prin API-uri REST simple. O interfață web minimă (servită de un strat backend-for-frontend) oferă formulare și tabele pentru fluxurile uzuale de programare.</p>
 <h3 id="12-obiective-principale">1.2 Obiective principale</h3>
 <ul>
-<li>Oferirea unei metode simple și fiabile prin care pacienții să poată:<ul>
+<li>Oferirea unei metode simple și fiabile prin care pacienții să poată:
+<ul>
 <li>Vizualiza disponibilitatea medicilor.</li>
 <li>Programa consultații noi.</li>
 <li>Vizualiza și anula programările existente.</li>
 </ul>
 </li>
-<li>Oferirea de instrumente pentru medici și administratori pentru a:<ul>
+<li>Oferirea de instrumente pentru medici și administratori pentru a:
+<ul>
 <li>Configura și actualiza programul de lucru și intervalele de pauză.</li>
 <li>Vizualiza programările viitoare și detaliile acestora.</li>
 </ul>
 </li>
-<li>Menținerea unei arhitecturi curate și minimale, potrivite pentru un proiect studențesc sau de portofoliu:<ul>
+<li>Menținerea unei arhitecturi curate și minimale, potrivite pentru un proiect mic sau de portofoliu:
+<ul>
 <li>Puține microservicii cu contexte delimitate clar.</li>
 <li>Dependențe Python minime și utilizare simplă a bazei de date.</li>
 <li>Distribuire bazată pe Docker fără orchestrare complexă.</li>
@@ -287,26 +168,31 @@
 </ul>
 <h3 id="13-actori-principali">1.3 Actori principali</h3>
 <ul>
-<li><strong>Pacient</strong><ul>
+<li><strong>Pacient</strong>
+<ul>
 <li>Utilizatorul final care programează și gestionează consultații.</li>
 </ul>
 </li>
-<li><strong>Medic</strong><ul>
+<li><strong>Medic</strong>
+<ul>
 <li>Oferă disponibilitate și desfășoară consultații.</li>
 </ul>
 </li>
-<li><strong>Administrator</strong><ul>
+<li><strong>Administrator</strong>
+<ul>
 <li>Gestionează programul de lucru al medicilor și configurarea de bază (de ex., orele de cabinet, durata intervalelor de programare).</li>
 </ul>
 </li>
-<li><strong>Sistem</strong><ul>
+<li><strong>Sistem</strong>
+<ul>
 <li>Componente interne ale sistemului, precum microservicii și baze de date (folosite implicit în cazurile de utilizare).</li>
 </ul>
 </li>
 </ul>
 <h3 id="14-cerințe-funcționale-cheie">1.4 Cerințe funcționale cheie</h3>
 <ul>
-<li>Din perspectiva pacientului:<ul>
+<li>Din perspectiva pacientului:
+<ul>
 <li>Vizualizarea listei de medici și a detaliilor de bază.</li>
 <li>Vizualizarea disponibilității pentru fiecare medic (intervale orare) pe un interval de date ales.</li>
 <li>Programarea unei consultații la medicul, data, ora și motivul alese.</li>
@@ -314,14 +200,16 @@
 <li>Anularea unei programări în limitele regulilor permise.</li>
 </ul>
 </li>
-<li>Din perspectiva medicului/administratorului:<ul>
+<li>Din perspectiva medicului/administratorului:
+<ul>
 <li>Definirea și actualizarea profilurilor medicilor (nume, specializare, contact).</li>
 <li>Definirea și actualizarea programului de lucru al medicilor și a configurării intervalelor de timp.</li>
 <li>Vizualizarea programărilor viitoare pentru fiecare medic.</li>
 <li>Confirmarea sau respingerea programărilor (opțional, configurabil).</li>
 </ul>
 </li>
-<li>Transversale:<ul>
+<li>Transversale:
+<ul>
 <li>Persistarea pacienților, medicilor, programului de lucru și programărilor.</li>
 <li>Trimiterea unei notificări (de tip email sau bazată pe loguri) la crearea, confirmarea sau anularea unei programări.</li>
 </ul>
@@ -331,95 +219,110 @@
 <ul>
 <li><strong>Simplitate și minimalism</strong>: Utilizarea unui stack tehnologic minimal — Python cu un framework web ușor (Flask), SQLite pentru persistență și REST peste HTTP.</li>
 <li><strong>Distribuire</strong>: Toate componentele rulează în containere Docker, orchestrate prin Docker Compose; fără Kubernetes sau service mesh extern.</li>
-<li><strong>Performanță</strong>: Adecvată pentru trafic redus spre mediu, tipic unui proiect studențesc; fără constrângeri hard real-time. Flask și SQLite sunt suficiente pentru astfel de API-uri la scară mică.</li>
+<li><strong>Performanță</strong>: Adecvată pentru trafic redus spre mediu, tipic unui proiect mic sau de portofoliu; fără constrângeri hard real-time. Flask și SQLite sunt suficiente pentru astfel de API-uri la scară mică.</li>
 <li><strong>Fiabilitate</strong>: Tratare de bază a erorilor și validare pentru a preveni programările inconsistente (de ex., rezervarea dublă a unui interval).</li>
 <li><strong>Securitate</strong>: Autentificare simplă (de ex., nume de utilizator/parolă cu sesiune sau JWT) pentru separarea accesului pacientului de cel al medicului/administratorului; se presupune că terminarea HTTPS este gestionată extern într-un mediu similar producției.</li>
 <li><strong>Mentenabilitate</strong>: Limite clare între servicii, cod Python lizibil și structură de repository simplă.</li>
 </ul>
-<hr />
+<hr>
 <h2 id="2-modelul-cazurilor-de-utilizare">2. Modelul cazurilor de utilizare</h2>
 <h3 id="21-cazuri-principale-de-utilizare-textual">2.1 Cazuri principale de utilizare (textual)</h3>
 <ul>
-<li><strong>UC1 – Vizualizare listă medici</strong><ul>
+<li><strong>UC1 – Vizualizare listă medici</strong>
+<ul>
 <li>Actor: Pacient</li>
 <li>Descriere: Pacientul vizualizează toți medicii cu informații de bază (nume, specializare) și selectează unul pentru a-i inspecta disponibilitatea sau pentru a face o programare.</li>
 </ul>
 </li>
-<li><strong>UC2 – Vizualizare disponibilitate medic</strong><ul>
+<li><strong>UC2 – Vizualizare disponibilitate medic</strong>
+<ul>
 <li>Actori: Pacient, Medic</li>
 <li>Descriere: Pacientul (sau medicul) vizualizează intervalele disponibile pentru un medic selectat într-o fereastră de timp specificată, pe baza programului de lucru configurat și a programărilor existente.</li>
 </ul>
 </li>
-<li><strong>UC3 – Programare consultație</strong><ul>
+<li><strong>UC3 – Programare consultație</strong>
+<ul>
 <li>Actor: Pacient</li>
 <li>Descriere: Pacientul selectează un medic și un interval disponibil, apoi trimite detaliile programării (motiv, note opționale). Sistemul validează disponibilitatea intervalului și creează o programare în stare în așteptare sau confirmată.</li>
 </ul>
 </li>
-<li><strong>UC4 – Confirmare programare</strong><ul>
+<li><strong>UC4 – Confirmare programare</strong>
+<ul>
 <li>Actori: Medic, Administrator</li>
 <li>Descriere: Medicul sau administratorul confirmă programările în așteptare. Starea confirmării este stocată și este declanșată o notificare.</li>
 </ul>
 </li>
-<li><strong>UC5 – Anulare programare</strong><ul>
+<li><strong>UC5 – Anulare programare</strong>
+<ul>
 <li>Actori: Pacient, Medic, Administrator</li>
 <li>Descriere: Pacientul, medicul sau administratorul anulează o programare existentă în limitele regulilor permise. Starea de anulare este stocată, iar notificarea este declanșată.</li>
 </ul>
 </li>
-<li><strong>UC6 – Vizualizare programări</strong><ul>
+<li><strong>UC6 – Vizualizare programări</strong>
+<ul>
 <li>Actori: Pacient, Medic</li>
 <li>Descriere: Pacientul își vizualizează propriile programări; medicul vizualizează programările alocate lui, filtrate după stare și interval de date.</li>
 </ul>
 </li>
-<li><strong>UC7 – Gestionare profil medic</strong><ul>
+<li><strong>UC7 – Gestionare profil medic</strong>
+<ul>
 <li>Actori: Administrator, Medic (pentru propriul profil)</li>
 <li>Descriere: Administratorul (sau medicul pentru câmpurile limitate) creează și actualizează profilurile medicilor, inclusiv specializarea, informațiile de contact și starea activă.</li>
 </ul>
 </li>
-<li><strong>UC8 – Gestionare program de lucru medic</strong><ul>
+<li><strong>UC8 – Gestionare program de lucru medic</strong>
+<ul>
 <li>Actor: Administrator</li>
 <li>Descriere: Administratorul configurează programul zilnic de lucru, durata intervalelor și perioadele de pauză pentru fiecare medic. Aceste informații sunt utilizate de serviciul de programări pentru a calcula disponibilitatea.</li>
 </ul>
 </li>
-<li><strong>UC9 – Gestionare pacienți</strong><ul>
+<li><strong>UC9 – Gestionare pacienți</strong>
+<ul>
 <li>Actor: Administrator</li>
 <li>Descriere: Administratorul înregistrează și menține informațiile de bază ale pacienților (nume, contact, note opționale).</li>
 </ul>
 </li>
-<li><strong>UC10 – Primire notificări programare</strong><ul>
+<li><strong>UC10 – Primire notificări programare</strong>
+<ul>
 <li>Actori: Pacient, Medic</li>
 <li>Descriere: Când programările sunt create, confirmate sau anulate, serviciul de notificări trimite un mesaj de tip email (sau loguri) către pacientul și medicul relevanți.</li>
 </ul>
 </li>
 </ul>
 <h3 id="22-diagrama-cazurilor-de-utilizare">2.2 Diagrama cazurilor de utilizare</h3>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/diagrama%20use%20case%202.2.jpg" alt="Use Case Diagram" /></p>
-<hr />
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/diagrama%20use%20case%202.2.jpg" alt="Use Case Diagram"></p>
+<hr>
 <h2 id="3-modelul-de-domeniu-și-bounded-contexts">3. Modelul de domeniu și bounded contexts</h2>
 <h3 id="31-entități-principale-de-domeniu-și-relații">3.1 Entități principale de domeniu și relații</h3>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/Diagrama%20Entitate-Relatie%203.1.jpg" alt="Entity-Relation Diagram" /></p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/Diagrama%20Entitate-Relatie%203.1.jpg" alt="Entity-Relation Diagram"></p>
 <p><strong>Entități</strong></p>
 <ul>
-<li><strong>Patient</strong><ul>
+<li><strong>Patient</strong>
+<ul>
 <li>Atribute: <code>patient_id</code>, <code>full_name</code>, <code>email</code>, <code>phone</code>, <code>created_at</code>, <code>updated_at</code>.</li>
 <li>Relații: are mai multe înregistrări <code>Appointment</code>.</li>
 </ul>
 </li>
-<li><strong>Doctor</strong><ul>
+<li><strong>Doctor</strong>
+<ul>
 <li>Atribute: <code>doctor_id</code>, <code>full_name</code>, <code>specialization</code>, <code>email</code>, <code>phone</code>, <code>active</code>, <code>created_at</code>, <code>updated_at</code>.</li>
 <li>Relații: are mai multe înregistrări <code>Appointment</code>; are mai multe înregistrări <code>DoctorWorkingHours</code>.</li>
 </ul>
 </li>
-<li><strong>DoctorWorkingHours</strong><ul>
+<li><strong>DoctorWorkingHours</strong>
+<ul>
 <li>Atribute: <code>working_hours_id</code>, <code>doctor_id</code>, <code>weekday</code> (0–6), <code>start_time</code>, <code>end_time</code>, <code>slot_length_minutes</code>, <code>break_start_time</code> (nullable), <code>break_end_time</code> (nullable).</li>
 <li>Relații: aparține lui <code>Doctor</code>.</li>
 </ul>
 </li>
-<li><strong>Appointment</strong><ul>
+<li><strong>Appointment</strong>
+<ul>
 <li>Atribute: <code>appointment_id</code>, <code>patient_id</code>, <code>doctor_id</code>, <code>start_datetime</code>, <code>end_datetime</code>, <code>status</code>, <code>reason</code>, <code>created_at</code>, <code>updated_at</code>.</li>
 <li>Relații: aparține lui <code>Patient</code>, aparține lui <code>Doctor</code>.</li>
 </ul>
 </li>
-<li><strong>Notification</strong><ul>
+<li><strong>Notification</strong>
+<ul>
 <li>Atribute: <code>notification_id</code>, <code>recipient_type</code> (patient/doctor), <code>recipient_id</code>, <code>channel</code> (email/log), <code>subject</code>, <code>body</code>, <code>status</code> (pending/sent/failed), <code>created_at</code>, <code>sent_at</code> (nullable).</li>
 <li>Relații: poate face referire la un <code>Appointment</code> (cheie externă opțională).</li>
 </ul>
@@ -427,16 +330,19 @@
 </ul>
 <p><strong>Obiecte de valoare</strong></p>
 <ul>
-<li><strong>TimeSlot</strong><ul>
+<li><strong>TimeSlot</strong>
+<ul>
 <li>Atribute: <code>start_datetime</code>, <code>end_datetime</code>.</li>
 <li>Utilizare: Calculat, nu este persistat independent; utilizat în calculul disponibilității.</li>
 </ul>
 </li>
-<li><strong>AppointmentStatus</strong><ul>
+<li><strong>AppointmentStatus</strong>
+<ul>
 <li>Valori permise: <code>PENDING</code>, <code>CONFIRMED</code>, <code>CANCELLED</code>.</li>
 </ul>
 </li>
-<li><strong>NotificationStatus</strong><ul>
+<li><strong>NotificationStatus</strong>
+<ul>
 <li>Valori permise: <code>PENDING</code>, <code>SENT</code>, <code>FAILED</code>.</li>
 </ul>
 </li>
@@ -450,31 +356,37 @@
 <li>O <code>Notification</code> este asociată cu un singur destinatar logic și poate fi asociată cu un <code>Appointment</code>.</li>
 </ul>
 <h3 id="32-bounded-contexts">3.2 Bounded contexts</h3>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/componente_diagram.jpg" alt="Bounded Context Diagram" /></p>
-<p>Pentru a păstra sistemul ușor de înțeles la un nivel potrivit pentru un proiect studențesc/de portofoliu, definim trei bounded contexts și mapăm fiecare la un microserviciu.</p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/componente_diagram.jpg" alt="Bounded Context Diagram"></p>
+<p>Pentru a păstra sistemul ușor de înțeles la un nivel potrivit pentru un proiect mic/de portofoliu, definim trei bounded contexts și mapăm fiecare la un microserviciu.</p>
 <ol>
-<li><strong>Contextul Directory</strong><ul>
+<li><strong>Contextul Directory</strong>
+<ul>
 <li>Domeniu: Gestionarea <code>Patient</code>, <code>Doctor</code> și <code>DoctorWorkingHours</code>.</li>
-<li>Responsabilități:<ul>
+<li>Responsabilități:
+<ul>
 <li>CRUD pentru pacienți și medici.</li>
 <li>CRUD pentru programul de lucru al medicilor și configurare.</li>
 </ul>
 </li>
-<li>Garanții:<ul>
+<li>Garanții:
+<ul>
 <li>Consistența internă a datelor legate de persoane și a programului de lucru.</li>
 </ul>
 </li>
 <li>Microserviciu: <strong>Directory Service</strong>.</li>
 </ul>
 </li>
-<li><strong>Contextul Scheduling</strong><ul>
+<li><strong>Contextul Scheduling</strong>
+<ul>
 <li>Domeniu: Gestionarea programărilor și calculul disponibilității.</li>
-<li>Responsabilități:<ul>
+<li>Responsabilități:
+<ul>
 <li>Gestionarea ciclului de viață al <code>Appointment</code> (creare, confirmare, anulare).</li>
 <li>Calcularea disponibilității din <code>DoctorWorkingHours</code> (prin apeluri API către Directory Service) și a programărilor existente.</li>
 </ul>
 </li>
-<li>Garanții:<ul>
+<li>Garanții:
+<ul>
 <li>Fără rezervare dublă a intervalelor de timp.</li>
 <li>Tranziții valide ale stării (de ex., nu se poate confirma o programare anulată).</li>
 </ul>
@@ -482,14 +394,17 @@
 <li>Microserviciu: <strong>Appointment Service</strong>.</li>
 </ul>
 </li>
-<li><strong>Contextul Notification</strong><ul>
+<li><strong>Contextul Notification</strong>
+<ul>
 <li>Domeniu: Livrarea notificărilor legate de programări.</li>
-<li>Responsabilități:<ul>
+<li>Responsabilități:
+<ul>
 <li>Gestionarea entităților <code>Notification</code> și trimiterea mesajelor.</li>
 <li>Oferirea unei interfețe API simple pentru ca alte servicii să declanșeze notificări.</li>
 </ul>
 </li>
-<li>Garanții:<ul>
+<li>Garanții:
+<ul>
 <li>Cel puțin o încercare de trimitere a unei notificări pentru fiecare cerere (pentru acest scop, o abordare simplă best-effort este acceptabilă).</li>
 </ul>
 </li>
@@ -500,7 +415,8 @@
 <p>În plus, există o componentă <strong>Web UI / Backend-for-Frontend (BFF)</strong>:</p>
 <ul>
 <li>Domeniu: Servește interfața HTML (sau un SPA foarte subțire) și agregă date din serviciile backend.</li>
-<li>Responsabilități:<ul>
+<li>Responsabilități:
+<ul>
 <li>Implementarea ecranelor pentru pacient, medic și administrator folosind apeluri simple către microservicii.</li>
 <li>Gestionarea autentificării utilizatorului (sesiune sau JWT) într-un mod minimal.</li>
 </ul>
@@ -508,28 +424,33 @@
 </ul>
 <h3 id="33-maparea-bounded-contexts-la-servicii">3.3 Maparea bounded contexts la servicii</h3>
 <ul>
-<li><strong>Directory Context → Directory Service</strong><ul>
+<li><strong>Directory Context → Directory Service</strong>
+<ul>
 <li>Deține <code>patients.db</code> (SQLite) și <code>doctors.db</code> (sau un singur <code>directory.db</code>).</li>
 <li>Expune endpoint-uri REST pentru pacienți, medici și programul de lucru.</li>
 <li>Appointment Service și Web UI citesc din acest serviciu.</li>
 </ul>
 </li>
-<li><strong>Scheduling Context → Appointment Service</strong><ul>
+<li><strong>Scheduling Context → Appointment Service</strong>
+<ul>
 <li>Deține <code>appointments.db</code>.</li>
-<li>Expune endpoint-uri REST pentru:<ul>
+<li>Expune endpoint-uri REST pentru:
+<ul>
 <li>Gestionarea programărilor.</li>
 <li>Calcularea intervalelor disponibile prin combinarea programului de lucru din Directory Service cu propriile programări.</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>Notification Context → Notification Service</strong><ul>
+<li><strong>Notification Context → Notification Service</strong>
+<ul>
 <li>Deține <code>notifications.db</code>.</li>
 <li>Expune endpoint-uri REST pentru a primi cereri de notificare din partea Appointment Service (și opțional Directory Service).</li>
 <li>Implementează trimiterea efectivă sub formă de email/log stub pentru a menține dependențele minime.</li>
 </ul>
 </li>
-<li><strong>Web Frontend (BFF)</strong><ul>
+<li><strong>Web Frontend (BFF)</strong>
+<ul>
 <li>Nu deține domeniul principal; poate avea o mică bază de date locală pentru gestionarea sesiunii, dacă se dorește.</li>
 <li>Orchestrază apelurile către serviciile Directory, Appointment și Notification.</li>
 <li>Implementat ca o aplicație Flask ușoară.</li>
@@ -537,19 +458,18 @@
 </li>
 </ul>
 <p>Această descompunere urmează o separare în stil DDD în jurul unor modele natural coezive (directory, scheduling, notifications), păstrând în același timp numărul de microservicii redus și responsabilitățile clare.</p>
-<hr />
+<hr>
 <h2 id="4-microservicii">4. Microservicii</h2>
-<table style="width:100%;border:1px solid;font-size:1.5em;font-weight:bold">
+<table style="width: 100%; border: 1px solid; font-size: 1.5em; font-weight: bold">
   <thead>
-    <tr style="text-align:center">
-      <th>Web &amp; BFF</th>
+    <tr style="text-align: center">
+      <th>Web & BFF</th>
       <th>Programări</th>
       <th>Directory</th>
       <th>Notificări</th>
     </tr>
   </thead>
 </table>
-
 <p>În total avem 4 microservicii care au un scop concret și o delimitare funcțională rigidă astfel încât fiecare să se ocupe de un aspect important al aplicației.</p>
 <h3 id="41-microserviciul-web--bff">4.1 Microserviciul Web &amp; BFF</h3>
 <p>Acesta coagulează toate microserviciile pentru a afișa datele aferente programărilor pentru pacienți, și apelarea fiecărui microserviciu pentru declanșarea acțiunilor. El servește șabloane HTML către client, și formează apelurile către API-uri pentru a întocmi funcționalitatea în interfață.</p>
@@ -563,10 +483,12 @@
 <h3 id="43-descrierea-api-ului">4.3 Descrierea API-ului</h3>
 <ul>
 <li>Protocol de acces: REST over HTTP (JSON payload)</li>
-<li>Puncte de acces:<ul>
+<li>Puncte de acces:
+<ul>
 <li><code>GET /</code> - pagina de autentificare, ulterior dashboard cu toate datele relevante pentru doctori, pacienți și admin după caz, după autentificare</li>
-<li><code>POST /login</code> - acțiune de autentificare<ul>
-<li>BODY: <code>{ email: "...", password: "..." }</code></li>
+<li><code>POST /login</code> - acțiune de autentificare
+<ul>
+<li>BODY: <code>{ email: &quot;...&quot;, password: &quot;...&quot; }</code></li>
 </ul>
 </li>
 <li><code>GET /patient/doctors</code> - pagina pentru listarea doctorilor pentru pacienți</li>
@@ -581,11 +503,12 @@
 <p>Microserviciul acesta controlează baza de date <code>web.db</code>. Această bază de date conține o singură tabelă care controlează utilizatorii pentru a putea identifica pe cei care sunt autentificați prin intermediul mecanismului de sesiuni.</p>
 <p>Toate coloanele se auto-explică. Coloana <code>entity_id</code> deține id-ul utilizatorului în cadrul rolului său. Pentru un doctor, <code>entity_id</code> va conține ID-ul doctorului logat.</p>
 <ul>
-<li><code>users</code><ul>
+<li><code>users</code>
+<ul>
 <li><code>id</code> INTEGER PRIMARY KEY NOT NULL</li>
 <li><code>entity_id</code> INTEGER FOREIGN KEY NOT NULL</li>
 <li><code>password</code> TEXT NOT NULL</li>
-<li><code>role</code> ENUM NOT NULL ("pacient" | "doctor" | "admin")</li>
+<li><code>role</code> ENUM NOT NULL (&quot;pacient&quot; | &quot;doctor&quot; | &quot;admin&quot;)</li>
 <li><code>created_at</code> TEXT NOT NULL</li>
 <li><code>updated_at</code> TEXT NOT NULL</li>
 </ul>
@@ -610,21 +533,26 @@
 <h3 id="47-descrierea-api-ului">4.7 Descrierea API-ului</h3>
 <ul>
 <li>Protocol de acces: Rest over HTTP (JSON payload)</li>
-<li>Puncte de acces:<ul>
-<li><code>GET /appointments</code> - întoarce o listă de programări<ul>
+<li>Puncte de acces:
+<ul>
+<li><code>GET /appointments</code> - întoarce o listă de programări
+<ul>
 <li>Parametri query: <code>patient_id</code>, <code>doctor_id</code>, <code>date_from</code>, <code>date_to</code></li>
 </ul>
 </li>
-<li><code>POST /appointments</code> - acțiune de creare a unei programări<ul>
-<li>BODY: <code>{ "patient_id": ..., "doctor_id": ..., "start_datetime": "...", "end_datetime": "...", "reason": "..." }</code></li>
+<li><code>POST /appointments</code> - acțiune de creare a unei programări
+<ul>
+<li>BODY: <code>{ &quot;patient_id&quot;: ..., &quot;doctor_id&quot;: ..., &quot;start_datetime&quot;: &quot;...&quot;, &quot;end_datetime&quot;: &quot;...&quot;, &quot;reason&quot;: &quot;...&quot; }</code></li>
 </ul>
 </li>
 <li><code>GET /appointments/{appointment_id}</code> - întoarce datele despre o anumită programare</li>
-<li><code>PATCH /appointments/{appointment_id}</code> - alterează starea unei programări<ul>
-<li>BODY: <code>{ "status": "CONFIRMED" }</code> sau <code>{ "status": "CANCELLED" }</code></li>
+<li><code>PATCH /appointments/{appointment_id}</code> - alterează starea unei programări
+<ul>
+<li>BODY: <code>{ &quot;status&quot;: &quot;CONFIRMED&quot; }</code> sau <code>{ &quot;status&quot;: &quot;CANCELLED&quot; }</code></li>
 </ul>
 </li>
-<li><code>GET /availability</code> - întoarce o listă de date și ore disponibile pentru programări<ul>
+<li><code>GET /availability</code> - întoarce o listă de date și ore disponibile pentru programări
+<ul>
 <li>Parametri query: <code>doctor_id</code>, <code>date_from</code>, <code>date_to</code></li>
 </ul>
 </li>
@@ -634,13 +562,14 @@
 <h3 id="48-structura-bazei-de-date">4.8 Structura bazei de date</h3>
 <p>Deține control total asupra bazei de date <code>appointments.db</code>. Această bază de date conține date despre programări, și stările lor.</p>
 <ul>
-<li><code>appointments</code><ul>
+<li><code>appointments</code>
+<ul>
 <li><code>appointment_id</code> INTEGER PRIMARY KEY</li>
 <li><code>patient_id</code> INTEGER FOREIGN KEY NOT NULL</li>
 <li><code>doctor_id</code> INTEGER FOREIGN KEY NOT NULL</li>
 <li><code>start_datetime</code> TEXT NOT NULL</li>
 <li><code>end_datetime</code> TEXT NOT NULL</li>
-<li><code>status</code> ENUM NOT NULL ("pending" | "accepted" | "rejected")</li>
+<li><code>status</code> ENUM NOT NULL (&quot;pending&quot; | &quot;accepted&quot; | &quot;rejected&quot;)</li>
 <li><code>reason</code> TEXT</li>
 <li><code>created_at</code> TEXT NOT NULL</li>
 <li><code>updated_at</code> TEXT NOT NULL</li>
@@ -666,17 +595,22 @@
 <ul>
 <li>Protocol de acces: REST over HTTP (JSON payload)</li>
 <li>Puncte de acces:</li>
-<li>Pacienți:<ul>
-<li><p><code>GET /patients</code> - listează pacienții</p>
-</li>
-<li><p><code>POST /patients</code> - crează un pacient</p>
+<li>Pacienți:
 <ul>
-<li>BODY: <code>{ full_name: "...", "email": "...", "phone": "..." }</code></li>
+<li>
+<p><code>GET /patients</code> - listează pacienții</p>
+</li>
+<li>
+<p><code>POST /patients</code> - crează un pacient</p>
+<ul>
+<li>BODY: <code>{ full_name: &quot;...&quot;, &quot;email&quot;: &quot;...&quot;, &quot;phone&quot;: &quot;...&quot; }</code></li>
 </ul>
 </li>
-<li><p><code>GET /patients/{patient_id}</code> - întoarce detalii despre un anume pacient</p>
+<li>
+<p><code>GET /patients/{patient_id}</code> - întoarce detalii despre un anume pacient</p>
 </li>
-<li><p>Doctori:</p>
+<li>
+<p>Doctori:</p>
 <ul>
 <li><code>GET /doctors</code> - listează doctorii</li>
 <li><code>POST /doctors</code> - crează un doctor</li>
@@ -684,25 +618,30 @@
 <li><code>PATCH /doctors/{doctor_id}</code> - actualizează date despre doctor</li>
 </ul>
 </li>
-<li><p>Orar:</p>
+<li>
+<p>Orar:</p>
 <ul>
 <li><code>GET /doctors/{doctor_id}/working-hours</code> - întoarce orarul unui anume doctor</li>
-<li><code>POST /doctors/{doctor_id}/working-hours</code> - crează un orar pentru un doctor<ul>
-<li>BODY: <code>{ "weekday": "...", "start_time": "...", "end_time": "...", "slot_length_minutes": "...", "break_start_time": "...", "break_end_time": "..." }</code></li>
+<li><code>POST /doctors/{doctor_id}/working-hours</code> - crează un orar pentru un doctor
+<ul>
+<li>BODY: <code>{ &quot;weekday&quot;: &quot;...&quot;, &quot;start_time&quot;: &quot;...&quot;, &quot;end_time&quot;: &quot;...&quot;, &quot;slot_length_minutes&quot;: &quot;...&quot;, &quot;break_start_time&quot;: &quot;...&quot;, &quot;break_end_time&quot;: &quot;...&quot; }</code></li>
 </ul>
 </li>
 <li><code>PATCH /doctors/{doctor_id}/working-hours</code> - modifică anumite date despre un anumit orar al unui doctor</li>
 <li><code>DELETE /doctors/{doctor_id}/working-hours</code> - șterge orarul de pe o zi al unui doctor</li>
 </ul>
 </li>
-<li><p><code>POST /admin</code> - crează un admin</p>
+<li>
+<p><code>POST /admin</code> - crează un admin</p>
 <ul>
-<li>BODY: <code>{ "first_name": "...", "last_name": "...", "email": "...", "password": "..." }</code></li>
+<li>BODY: <code>{ &quot;first_name&quot;: &quot;...&quot;, &quot;last_name&quot;: &quot;...&quot;, &quot;email&quot;: &quot;...&quot;, &quot;password&quot;: &quot;...&quot; }</code></li>
 </ul>
 </li>
-<li><p><code>PATCH /admin/{admin_id}</code> - modifică datele unui admin</p>
+<li>
+<p><code>PATCH /admin/{admin_id}</code> - modifică datele unui admin</p>
 </li>
-<li><p><code>DELETE /admin/{admin_Id}</code> - șterge un admin</p>
+<li>
+<p><code>DELETE /admin/{admin_Id}</code> - șterge un admin</p>
 </li>
 </ul>
 </li>
@@ -710,14 +649,16 @@
 <h3 id="53-structura-bazei-de-date">5.3 Structura bazei de date</h3>
 <p>Acest microserviciu are control complet asupra bazei de date <code>directory.db</code> unde se stochează datele despre pacienți, doctori, admini și orarul unui doctor.</p>
 <ul>
-<li><code>patients</code><ul>
+<li><code>patients</code>
+<ul>
 <li><code>id</code> INTEGER PRIMARY KEY</li>
 <li><code>full_name</code> TEXT NOT NULL</li>
 <li><code>email</code> TEXT NOT NULL</li>
 <li><code>phone</code> TEXT</li>
 </ul>
 </li>
-<li><code>doctors</code><ul>
+<li><code>doctors</code>
+<ul>
 <li><code>id</code> INTEGER PRIMARY KEY</li>
 <li><code>full_name</code> TEXT NOT NULL</li>
 <li><code>specialization</code> TEXT</li>
@@ -726,13 +667,15 @@
 <li><code>active</code> BOOL NOT NULL</li>
 </ul>
 </li>
-<li><code>admins</code><ul>
+<li><code>admins</code>
+<ul>
 <li><code>id</code> INTEGER PRIMARY KEY</li>
 <li><code>full_name</code> TEXT NOT NULL</li>
 <li><code>email</code>: TEXT NOT NULL</li>
 </ul>
 </li>
-<li><code>doctor_working_hours</code><ul>
+<li><code>doctor_working_hours</code>
+<ul>
 <li><code>id</code> INTEGER PRIMARY KEY</li>
 <li><code>doctor_id</code> INTEGER FOREIGN KEY NOT NULL</li>
 <li><code>weekday</code> INTEGER NOT NULL</li>
@@ -763,12 +706,15 @@
 <h3 id="62-descrierea-api-ului">6.2 Descrierea API-ului</h3>
 <ul>
 <li>Protocol de acces: REST over HTTP (JSON payload)</li>
-<li>Puncte de acces:<ul>
-<li><code>POST /notifications</code> - crearea unei notificări<ul>
-<li>BODY: <code>{ "recipient_type": "patient"|"doctor", "recipient_id": "...",subject": "...", "body": "..." }</code></li>
+<li>Puncte de acces:
+<ul>
+<li><code>POST /notifications</code> - crearea unei notificări
+<ul>
+<li>BODY: <code>{ &quot;recipient_type&quot;: &quot;patient&quot;|&quot;doctor&quot;, &quot;recipient_id&quot;: &quot;...&quot;,subject&quot;: &quot;...&quot;, &quot;body&quot;: &quot;...&quot; }</code></li>
 </ul>
 </li>
-<li><code>GET /notifications</code> - listarea notificărilor pentru un actor<ul>
+<li><code>GET /notifications</code> - listarea notificărilor pentru un actor
+<ul>
 <li>Parametri query: <code>recipient_type</code>, <code>recipient_id</code>,</li>
 </ul>
 </li>
@@ -779,13 +725,14 @@
 <h3 id="63-structura-bazei-de-date">6.3 Structura bazei de date</h3>
 <p>Deține controlul bazei de date <code>notifications.db</code> unde se stochează notificările și statusurile de vizualizare a acestora.</p>
 <ul>
-<li><code>notifications</code><ul>
+<li><code>notifications</code>
+<ul>
 <li><code>id</code> INTEGER PRIMARY KEY</li>
-<li><code>recipient_type</code> ENUM NOT NULL ("pacient" | "doctor")</li>
+<li><code>recipient_type</code> ENUM NOT NULL (&quot;pacient&quot; | &quot;doctor&quot;)</li>
 <li><code>recipient_id</code> INTEGER FOREIGN KEY NOT NULL</li>
 <li><code>subject</code> TEXT NOT NULL</li>
 <li><code>body</code> TEXT NOT NULL</li>
-<li><code>status</code> TEXT NOT NULL </li>
+<li><code>status</code> TEXT NOT NULL</li>
 <li><code>created_at</code> TEXT NOT NULL</li>
 <li><code>updated_at</code> TEXT NOT NULL</li>
 </ul>
@@ -804,51 +751,51 @@ Fiecare context își încapsulează propriile reguli de business,
 propriul model de date și propria logică de validare.
 Această decizie de proiectare este clar vizibilă în diagramele de context
 și de componente,
-unde sistemul este împărțit în servicii individuale: 
-Directory Service, Appointment Service, Notification Service 
+unde sistemul este împărțit în servicii individuale:
+Directory Service, Appointment Service, Notification Service
 și o interfață de tip <strong>Backend-for-Frontend (BFF)</strong>.</p>
 <h3 id="61-analiza-contextelor">6.1 Analiza contextelor</h3>
 <p>Diagramele de context, și documentația generală a proiectului,
 arată o împărțire a domeniului de business din backend,
-protejată de un strat de orchestrare frontend. 
+protejată de un strat de orchestrare frontend.
 Această compartimentare reflectă liniile de separare ale
 proceselor operaționale dintr-o clinică medicală.</p>
 <h4 id="611-contextul-directory">6.1.1 Contextul Directory</h4>
 <p>Primul context este reprezentat de <strong>Directory Context</strong>, controlat de
-<strong>Directory Service</strong>. 
+<strong>Directory Service</strong>.
 Acest modul funcționează ca sistemul principal de evidență
 pentru toate datele master ale platformei. Deține control
-absolut asupra ciclului de viață al profilurilor pacienților, medicilor și 
+absolut asupra ciclului de viață al profilurilor pacienților, medicilor și
 definițiilor programelor de lucru și ale perioadelor de pauză alocate
 profesioniștilor medicali.</p>
 <p>Din perspectivă arhitecturală, Directory Service este complet independent,
-nu apelează nicio altă componentă a sistemului pentru a-și îndeplini 
-funcțiile de bază. Această asimetrie a dependențelor 
-asigură că datele demografice și operaționale de bază rămân disponibile 
+nu apelează nicio altă componentă a sistemului pentru a-și îndeplini
+funcțiile de bază. Această asimetrie a dependențelor
+asigură că datele demografice și operaționale de bază rămân disponibile
 chiar și în scenariile în care sistemul de programare întâmpină dificultăți
 tehnice temporare.</p>
 <h4 id="612-contextul-appointments">6.1.2 Contextul Appointments</h4>
 <p>Al doilea context, și cel mai complex din punct de vedere al logicii tranzacționale,
-este <strong>Appointment Context</strong>, gestionat de <strong>Appointment Service</strong>. 
-Această componentă este motorul operațional al sistemului, 
+este <strong>Appointment Context</strong>, gestionat de <strong>Appointment Service</strong>.
+Această componentă este motorul operațional al sistemului,
 cu responsabilitatea exclusivă de a gestiona ciclul de viață al unei programări.</p>
 <p>Appointment Service nu stochează o copie a numelui pacientului sau
-a specializării medicului. În schimb, stochează doar identificatori numerici 
+a specializării medicului. În schimb, stochează doar identificatori numerici
 (chei de referință). Pentru a compune o imagine completă a disponibilității
 sau pentru a afișa un calendar, acest serviciu funcționează ca un
 client activ, și execută cereri HTTP către Directory Service
 pentru a prelua dinamic informații necesare. Acest mecanism previne
-anomaliile de actualizare, dacă un medic își schimbă numărul de telefon, 
-modificarea este reflectată instantaneu în toate programările 
+anomaliile de actualizare, dacă un medic își schimbă numărul de telefon,
+modificarea este reflectată instantaneu în toate programările
 viitoare fără a necesita sincronizări masive ale bazelor de date.</p>
 <h4 id="613-contextul-notification">6.1.3 Contextul Notification</h4>
 <p>Al treilea context este <strong>Notification Context</strong>, operat de <strong>Notification Service</strong>.
 Acest modul izolează logica de alertare asincronă și acționează ca
-receptor de comenzi. Când în sistem au loc evenimente de business 
-semnificative (crearea, confirmarea sau anularea unei programări), 
+receptor de comenzi. Când în sistem au loc evenimente de business
+semnificative (crearea, confirmarea sau anularea unei programări),
 Appointment Service generează o sarcină și o transmite către acest context.</p>
 <h4 id="614-contextul-web--bff">6.1.4 Contextul Web &amp; BFF</h4>
-<p>În final, <strong>Web Layer</strong>, implementat ca model 
+<p>În final, <strong>Web Layer</strong>, implementat ca model
 <strong>Backend-for-Frontend (BFF)</strong>, servește drept interfață unificatoare.
 Într-o arhitectură descentralizată, expunerea directă a
 microserviciilor către browserul clientului ar genera haos comunicațional,
@@ -857,49 +804,49 @@ microserviciilor către browserul clientului ar genera haos comunicațional,
 de template-uri <strong>Jinja2</strong> pentru a reda interfețe HTML,
 și agregă simultan date din programări și din director
 în structuri de date coerente înainte de a le prezenta
-utilizatorului. Acest strat gestionează sesiunile utilizatorilor, autentificarea și accesul pe roluri, 
+utilizatorului. Acest strat gestionează sesiunile utilizatorilor, autentificarea și accesul pe roluri,
 separând strict privilegiile dintre pacienți, medici și administratori.</p>
 <h3 id="62-modelarea-datelor">6.2 Modelarea datelor</h3>
-<p>Contrar practicilor monolitice care folosesc un server centralizat masiv de baze de date 
-(de ex., o singură instanță PostgreSQL sau MySQL), 
-sistemul implementează un model strict de o bază de date per serviciu. 
+<p>Contrar practicilor monolitice care folosesc un server centralizat masiv de baze de date
+(de ex., o singură instanță PostgreSQL sau MySQL),
+sistemul implementează un model strict de o bază de date per serviciu.
 Această izolare garantează că granițele sunt impenetrabile
 la nivelul fizic al datelor.</p>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/Diagrama%20Entitate-Relatie%203.1.jpg" alt="Entity-Relationship Diagram" /></p>
-<p>Tehnologia selectată pentru acest strat de persistență este <strong>SQLite</strong>. Alegerea SQLite are o importanță strategică majoră pentru îndeplinirea cerințelor de "Deployability" și "Simplicity". Fiind o bază de date serverless, bazată pe fișiere, SQLite elimină complet necesitatea instalării, configurării, securizării și monitorizării unui daemon separat. Toată logica bazei de date este procesată de o bibliotecă C integrată direct în procesul aplicației Python.</p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/Diagrama%20Entitate-Relatie%203.1.jpg" alt="Entity-Relationship Diagram"></p>
+<p>Tehnologia selectată pentru acest strat de persistență este <strong>SQLite</strong>. Alegerea SQLite are o importanță strategică majoră pentru îndeplinirea cerințelor de &quot;Deployability&quot; și &quot;Simplicity&quot;. Fiind o bază de date serverless, bazată pe fișiere, SQLite elimină complet necesitatea instalării, configurării, securizării și monitorizării unui daemon separat. Toată logica bazei de date este procesată de o bibliotecă C integrată direct în procesul aplicației Python.</p>
 <p>Deși această arhitectură introduce limitări privind scrierile concurente masive (din cauza mecanismului de blocare la nivel de fișier al SQLite), ea este perfect calibrată pentru un sistem de management al programărilor medicale cu volume de trafic mici până la medii, unde operațiile de citire domină categoric operațiile de scriere.</p>
 <h4 id="621-schema-bazei-de-date">6.2.1 Schema bazei de date</h4>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/Database%20Schema%20Diagram%204.2%204.3%204.4.jpg" alt="Database Schema Diagram" /></p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/Database%20Schema%20Diagram%204.2%204.3%204.4.jpg" alt="Database Schema Diagram"></p>
 <h4 id="622-relații-fizice-vs-logice">6.2.2 Relații fizice vs. logice</h4>
-<p>În cadrul <code>directory.db</code>, există o linie continuă marcată "FK constraint" între tabelele <code>doctors</code> și <code>doctor_working_hours</code>. Acest lucru indică utilizarea unei constrângeri SQLite FOREIGN KEY la nivelul bazei de date, garantând că nu poate fi inserat niciun program pentru un medic inexistent și că ștergerea unui medic va declanșa o eroare sau o ștergere în cascadă.</p>
+<p>În cadrul <code>directory.db</code>, există o linie continuă marcată &quot;FK constraint&quot; între tabelele <code>doctors</code> și <code>doctor_working_hours</code>. Acest lucru indică utilizarea unei constrângeri SQLite FOREIGN KEY la nivelul bazei de date, garantând că nu poate fi inserat niciun program pentru un medic inexistent și că ștergerea unui medic va declanșa o eroare sau o ștergere în cascadă.</p>
 <p>În schimb, liniile care conectează tabelul <code>appointments</code> cu <code>doctors</code> și <code>patients</code>
-sunt întrerupte și marcate ca "Logical relation" sau "Logical FK". 
-Deoarece <code>appointments</code> se află într-un fișier separat fizic (<code>appointments.db</code>), 
+sunt întrerupte și marcate ca &quot;Logical relation&quot; sau &quot;Logical FK&quot;.
+Deoarece <code>appointments</code> se află într-un fișier separat fizic (<code>appointments.db</code>),
 motorul bazei de date SQLite nu are capacitatea de a impune referințe între fișiere.
 Acest lucru mută responsabilitatea menținerii integrității referențiale de la baza
 de date la stratul aplicației.</p>
 <h3 id="63-coregrafia-api-urilor">6.3 Coregrafia API-urilor</h3>
 <p>Diagramele de rețea indică utilizarea exclusivă a HTTP pentru transferul stării
 în format JSON, cu endpoint-uri REST organizate logic sub un prefix
-comun de versiune: <code>REST /api/v1</code>. </p>
+comun de versiune: <code>REST /api/v1</code>.</p>
 <h4 id="631-secvența-de-creare-a-unei-programări">6.3.1 Secvența de creare a unei programări</h4>
-<p>Diagrama de secvență dedicată fluxului de creare a unei programări </p>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/Diagrama%20de%20Secventa%20(Crearea%20unei%20programari)%204.2.jpg" alt="Sequence Diagram Appointment Creation" /></p>
+<p>Diagrama de secvență dedicată fluxului de creare a unei programări</p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/Diagrama%20de%20Secventa%20(Crearea%20unei%20programari)%204.2.jpg" alt="Sequence Diagram Appointment Creation"></p>
 <h3 id="64-ciclul-de-viață-al-programării">6.4 Ciclul de viață al programării</h3>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/Diagrama%20de%20Stare%20(Ciclul%20de%20viata%20al%20programarii)%203.1%203.2.jpg" alt="State Machine Diagram Appointment Lifecycle" /></p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/Diagrama%20de%20Stare%20(Ciclul%20de%20viata%20al%20programarii)%203.1%203.2.jpg" alt="State Machine Diagram Appointment Lifecycle"></p>
 <p>Orice interacțiune de creare a unei programări inițializează obiectul în starea
-<strong><code>PENDING</code></strong> (În așteptare). Această stare reprezintă o intenție despre 
+<strong><code>PENDING</code></strong> (În așteptare). Această stare reprezintă o intenție despre
 care încă nu s-a primit aprobarea de la un doctor.
 Din acest punct nodal inițial, sistemul permite o bifurcație binară a tranzițiilor.</p>
 <p><strong>Tranziția 1 către <code>CONFIRMED</code></strong>: Această mutație de stare este restrictivă din punct de vedere al autorizării: este un act declanșat de acțiunea directă a unui <strong>Doctor</strong> sau <strong>Administrator</strong>.</p>
 <p><strong>Tranziția 2 către <code>CANCELLED</code></strong>: Spre deosebire de confirmare,
-inițierea este disponibilă oricăruia dintre actorii implicați 
+inițierea este disponibilă oricăruia dintre actorii implicați
 (Patient, Doctor, Administrator). Mai mult, sistemul permite
 tranziția către <code>CANCELLED</code> din starea <code>CONFIRMED</code>.</p>
 <h3 id="65-actori">6.5 Actori</h3>
-<p>Sistemul Patient Appointment Manager gestionează <strong>trei actori</strong>, 
-delimitați prin bariere de autorizare aplicate strict de stratul Web UI/BFF. 
-Acest mecanism de securitate presupune gestionarea sesiunilor 
+<p>Sistemul Patient Appointment Manager gestionează <strong>trei actori</strong>,
+delimitați prin bariere de autorizare aplicate strict de stratul Web UI/BFF.
+Acest mecanism de securitate presupune gestionarea sesiunilor
 care poartă identitatea și rolul utilizatorului la fiecare cerere HTTP.</p>
 <h4 id="651-rolul-pacient">6.5.1 Rolul Pacient</h4>
 <p>Cazurile de utilizare asociate se concentrează exclusiv pe operațiuni
@@ -929,11 +876,11 @@ Pacientul deține o perspectivă izolată asupra datelor,
 <li><strong>Cancel appointment</strong> și <strong>Confirm appointment</strong>.</li>
 </ul>
 <h2 id="7-infrastructura-de-deployment">7. Infrastructura de deployment</h2>
-<p><img src="file:///home/ikaros/Documents/ISOC/ISOC_Project/Docs/img/Architecture%20diagram%206.2.jpg" alt="Architecture Deployment Diagram" /></p>
+<p><img src="file:////Users/ikaros/Documents/GitHub/ISOC_Project/Docs/img/Architecture%20diagram%206.2.jpg" alt="Architecture Deployment Diagram"></p>
 <h3 id="71-topologia-containerelor">7.1 Topologia containerelor</h3>
-<p>Nodul central de execuție, ilustrat în Deployment Diagram, este entitatea numită 
-<strong>"Docker Host"</strong>. Acesta poate reprezenta laptopul unui dezvoltator,
-o mașină virtuală în cloud (de ex., AWS EC2, DigitalOcean Droplet) 
+<p>Nodul central de execuție, ilustrat în Deployment Diagram, este entitatea numită
+<strong>&quot;Docker Host&quot;</strong>. Acesta poate reprezenta laptopul unui dezvoltator,
+o mașină virtuală în cloud (de ex., AWS EC2, DigitalOcean Droplet)
 sau un server dedicat. În interiorul acestui nod hardware rulează
 <strong>containerul Docker</strong>.</p>
 <p>Fiecare dintre cele patru componente de
@@ -942,23 +889,12 @@ Notification Service)
 este împachetată în propria sa <strong>image</strong> Docker unde se
 conțin toate dependențele, configurațiile și codul sursă necesar pentru execuție.</p>
 <p>Un simplu fișier <code>docker-compose.yml</code> conține toate instrucțiunile pentru a genera
-imaginile aferente și a lansa containerele în ordinea corectă, 
-asigurând că fiecare serviciu este disponibil pentru celelalte atunci 
+imaginile aferente și a lansa containerele în ordinea corectă,
+asigurând că fiecare serviciu este disponibil pentru celelalte atunci
 când acestea au nevoie să comunice între ele.</p>
-
-                <div class="code-block">
-                    <div class="code-header">
-                        <span class="language">bash</span>
-                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <pre><code class="hljs language-bash">docker-compose up -d</code></pre>
-                </div>
-            <h2 id="8-instalare-și-configurare">8. Instalare și configurare</h2>
+<pre><code class="language-bash">docker-compose up -d
+</code></pre>
+<h2 id="8-instalare-și-configurare">8. Instalare și configurare</h2>
 <p>Toate componentele rulează ca containere Docker separate pe un singur host Docker
 orchestrate prin Docker Compose. Cele patru containere sunt:</p>
 <ul>
@@ -967,51 +903,53 @@ orchestrate prin Docker Compose. Cele patru containere sunt:</p>
 <li><code>directory-service</code></li>
 <li><code>notification-service</code></li>
 </ul>
-<p>Fiecare microserviciu utilizează propriul fișier de bază de date SQLite, 
-persistat printr-un volum Docker dedicat. 
+<p>Fiecare microserviciu utilizează propriul fișier de bază de date SQLite,
+persistat printr-un volum Docker dedicat.
 SQLite permite fiecărui serviciu să își gestioneze propriul spațiu
 de stocare cu overhead minim de rețea și containere.</p>
 <h3 id="81-cerințe">8.1 Cerințe</h3>
 <ul>
 <li><strong>Docker Engine</strong></li>
-<li><strong>Docker Compose</strong> </li>
+<li><strong>Docker Compose</strong></li>
 <li>Nu sunt necesare alte dependențe runtime pe host; toate pachetele Python sunt instalate în interiorul containerelor.</li>
 </ul>
 <h4 id="811-responsabilitățile-containerelor-și-maparea-porturilor">8.1.1 Responsabilitățile containerelor și maparea porturilor</h4>
 <table>
 <thead>
 <tr>
-<th>Container</th>
-<th>Port intern</th>
-<th>Port host</th>
-<th>Volum bază de date</th>
+<th style="text-align:left">Container</th>
+<th style="text-align:left">Port intern</th>
+<th style="text-align:left">Port host</th>
+<th style="text-align:left">Volum bază de date</th>
 </tr>
 </thead>
-<tbody><tr>
-<td><code>web</code></td>
-<td>8080</td>
-<td>8080</td>
-<td>opțional <code>web.db</code> pentru sesiuni</td>
+<tbody>
+<tr>
+<td style="text-align:left"><code>web</code></td>
+<td style="text-align:left">8080</td>
+<td style="text-align:left">8080</td>
+<td style="text-align:left">opțional <code>web.db</code> pentru sesiuni</td>
 </tr>
 <tr>
-<td><code>appointment-service</code></td>
-<td>5001</td>
-<td>(doar intern)</td>
-<td><code>appointments_data</code></td>
+<td style="text-align:left"><code>appointment-service</code></td>
+<td style="text-align:left">5001</td>
+<td style="text-align:left">(doar intern)</td>
+<td style="text-align:left"><code>appointments_data</code></td>
 </tr>
 <tr>
-<td><code>directory-service</code></td>
-<td>5002</td>
-<td>(doar intern)</td>
-<td><code>directory_data</code></td>
+<td style="text-align:left"><code>directory-service</code></td>
+<td style="text-align:left">5002</td>
+<td style="text-align:left">(doar intern)</td>
+<td style="text-align:left"><code>directory_data</code></td>
 </tr>
 <tr>
-<td><code>notification-service</code></td>
-<td>5003</td>
-<td>(doar intern)</td>
-<td><code>notifications_data</code></td>
+<td style="text-align:left"><code>notification-service</code></td>
+<td style="text-align:left">5003</td>
+<td style="text-align:left">(doar intern)</td>
+<td style="text-align:left"><code>notifications_data</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Doar containerul <code>web</code> este publicat pe host. Toate serviciile backend sunt accesibile exclusiv în cadrul rețelei interne Docker (<code>appointment_net</code>), oferind izolare de bază la nivel de rețea fără configurații suplimentare.</p>
 <h4 id="812-comunicarea-în-rețea">8.1.2 Comunicarea în rețea</h4>
 <p>Toate serviciile sunt atașate la aceeași rețea Docker Compose (<code>appointment_net</code>). Apelurile inter-servicii utilizează rezoluția după numele containerelor:</p>
@@ -1025,100 +963,58 @@ de stocare cu overhead minim de rețea și containere.</p>
 <table>
 <thead>
 <tr>
-<th>Variabilă</th>
-<th>Utilizată de</th>
-<th>Descriere</th>
+<th style="text-align:left">Variabilă</th>
+<th style="text-align:left">Utilizată de</th>
+<th style="text-align:left">Descriere</th>
 </tr>
 </thead>
-<tbody><tr>
-<td><code>APP_ENV</code></td>
-<td>Toate serviciile</td>
-<td><code>development</code> sau <code>production</code></td>
+<tbody>
+<tr>
+<td style="text-align:left"><code>APP_ENV</code></td>
+<td style="text-align:left">Toate serviciile</td>
+<td style="text-align:left"><code>development</code> sau <code>production</code></td>
 </tr>
 <tr>
-<td><code>PORT</code></td>
-<td>Toate serviciile</td>
-<td>Portul intern al containerului (de ex., <code>5001</code>)</td>
+<td style="text-align:left"><code>PORT</code></td>
+<td style="text-align:left">Toate serviciile</td>
+<td style="text-align:left">Portul intern al containerului (de ex., <code>5001</code>)</td>
 </tr>
 <tr>
-<td><code>DB_PATH</code></td>
-<td>Serviciile backend</td>
-<td>Calea către fișierul SQLite (de ex., <code>/data/appointments.db</code>)</td>
+<td style="text-align:left"><code>DB_PATH</code></td>
+<td style="text-align:left">Serviciile backend</td>
+<td style="text-align:left">Calea către fișierul SQLite (de ex., <code>/data/appointments.db</code>)</td>
 </tr>
 <tr>
-<td><code>DIRECTORY_SERVICE_BASE_URL</code></td>
-<td>Appointment Service</td>
-<td>URL-ul de bază pentru apelurile către Directory Service</td>
+<td style="text-align:left"><code>DIRECTORY_SERVICE_BASE_URL</code></td>
+<td style="text-align:left">Appointment Service</td>
+<td style="text-align:left">URL-ul de bază pentru apelurile către Directory Service</td>
 </tr>
 <tr>
-<td><code>NOTIFICATION_SERVICE_BASE_URL</code></td>
-<td>Appointment Service</td>
-<td>URL-ul de bază pentru apelurile către Notification Service</td>
+<td style="text-align:left"><code>NOTIFICATION_SERVICE_BASE_URL</code></td>
+<td style="text-align:left">Appointment Service</td>
+<td style="text-align:left">URL-ul de bază pentru apelurile către Notification Service</td>
 </tr>
 <tr>
-<td><code>SECRET_KEY</code></td>
-<td>Web service</td>
-<td>Cheie secretă pentru criptarea sesiunii/autentificării</td>
+<td style="text-align:left"><code>SECRET_KEY</code></td>
+<td style="text-align:left">Web service</td>
+<td style="text-align:left">Cheie secretă pentru criptarea sesiunii/autentificării</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <h4 id="814-pornirea-aplicației">8.1.4 Pornirea aplicației</h4>
 <p>Pentru a construi imaginile și a porni toate containerele în mod detached, rulați următoarea comandă din rădăcina repository-ului:</p>
-
-                <div class="code-block">
-                    <div class="code-header">
-                        <span class="language">bash</span>
-                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <pre><code class="hljs language-bash">docker-compose up --build -d</code></pre>
-                </div>
-            <p>După ce toate containerele rulează, aplicația este accesibilă la:</p>
-
-                <div class="code-block">
-                    <div class="code-header">
-                        <span class="language">plaintext</span>
-                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <pre><code class="hljs language-plaintext">http://localhost:8080</code></pre>
-                </div>
-            <p>Pentru a opri toate containerele:</p>
-
-                <div class="code-block">
-                    <div class="code-header">
-                        <span class="language">bash</span>
-                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <pre><code class="hljs language-bash">docker-compose down</code></pre>
-                </div>
-            <p>Pentru a opri și a elimina, de asemenea, toate volumele persistente (acest lucru va șterge toate datele din baza de date):</p>
-
-                <div class="code-block">
-                    <div class="code-header">
-                        <span class="language">bash</span>
-                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <pre><code class="hljs language-bash">docker-compose down -v</code></pre>
-                </div>
-            <h4 id="815-stocare-persistentă">8.1.5 Stocare persistentă</h4>
+<pre><code class="language-bash">docker-compose up --build -d
+</code></pre>
+<p>După ce toate containerele rulează, aplicația este accesibilă la:</p>
+<pre><code>http://localhost:8080
+</code></pre>
+<p>Pentru a opri toate containerele:</p>
+<pre><code class="language-bash">docker-compose down
+</code></pre>
+<p>Pentru a opri și a elimina, de asemenea, toate volumele persistente (acest lucru va șterge toate datele din baza de date):</p>
+<pre><code class="language-bash">docker-compose down -v
+</code></pre>
+<h4 id="815-stocare-persistentă">8.1.5 Stocare persistentă</h4>
 <p>Fiecare serviciu backend montează un volum Docker numit pentru a păstra datele între repornirile containerelor și reconstruirile imaginilor:</p>
 <ul>
 <li><code>appointment-service</code> utilizează volumul <code>appointments_data</code>, montat la <code>/data/appointments.db</code></li>
@@ -1133,26 +1029,7 @@ de stocare cu overhead minim de rețea și containere.</p>
 <li><strong>Mateian Tudor</strong>: Descrierea secțiunii de cazuri de utilizare și a actorilor, precum și a diagramelor de secvență, și a modelului domeniu. Descrierea entităților și a relațiilor dintre acestea, precum și a diagramelor de context.</li>
 </ul>
 
-    
-    <script>
-        function updateTheme() {
-            const isLight = document.body.classList.contains('vscode-light');
-            const linkLight = document.getElementById('highlight-css-light');
-            const linkDark = document.getElementById('highlight-css-dark');
-            if (linkLight && linkDark) {
-                linkLight.disabled = !isLight;
-                linkDark.disabled = isLight;
-            }
-        }
-        updateTheme();
-        new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                if (mutation.attributeName === 'class') {
-                    updateTheme();
-                }
-            }
-        }).observe(document.body, { attributes: true });
-    </script>
-    
-</body>
-</html>
+            
+            
+        </body>
+        </html>
